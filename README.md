@@ -24,7 +24,7 @@ A implementar: UC16 aprovar ou reprovar mentor, UC17 gerar vouchers, UC18 gerenc
 
 ```bash
 npm ci
-cp .env.example .env                # preencha com os valores fornecidos pelo professor
+copy .env.example .env                # preencha com os valores fornecidos pelo professor
 npx expo prebuild -p android --clean
 npx expo run:android
 ```
