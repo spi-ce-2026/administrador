@@ -7,7 +7,7 @@ import { useAuth } from "@mentorias/auth";
 import AccountScreen from "../screens/AccountScreen";
 import DashboardScreen from "../screens/DashboardScreen";
 import LoginScreen from "../screens/LoginScreen";
-import MentorsScreen from "../screens/MentorsScreen";
+import MentorsScreen from "../screens/mentor/MentorsScreen";
 import RestrictedScreen from "../screens/RestrictedScreen";
 import UsersScreen from "../screens/UsersScreen";
 import VouchersScreen from "../screens/VouchersScreen";

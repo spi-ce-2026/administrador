@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Switch, SafeAreaView, StatusBar, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MentorCard from '../components/MentorCard';
-import { getTheme } from '../theme/colors';
-import { MENTORS } from '../mocks/mentorsData';
+import MentorCard from '../../components/MentorCard';
+import { getTheme } from '../../theme/colors';
+import { MENTORS } from '../../mocks/mentorsData';
 
 export default function MentorsScreen() {
   const [isDarkMode, setIsDarkMode] = useState(false);
