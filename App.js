@@ -1,26 +1,34 @@
-import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
-import { StatusBar } from "expo-status-bar";
-import { PaperProvider, adaptNavigationTheme } from "react-native-paper";
-import { AuthProvider } from "@mentorias/auth";
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import AppTabs from './src/navigation/dashboard/AppTabs';
+import { ThemeProvider, useTheme } from './src/theme';
 
-import RootNavigator from "./src/navigation/RootNavigator";
-import { theme } from "./src/theme";
+function Navegacao() {
+  const tema = useTheme();
+  const base = tema.modoEscuro ? DarkTheme : DefaultTheme;
+  const temaNavegacao = {
+    ...base,
+    colors: {
+      ...base.colors,
+      background: tema.fundo,
+      card: tema.tabBar,
+      primary: tema.tabAtivo,
+    },
+  };
 
-const { LightTheme: navigationTheme } = adaptNavigationTheme({
-	reactNavigationLight: DefaultTheme,
-	materialLight: theme,
-});
+  return (
+    <NavigationContainer theme={temaNavegacao}>
+      <AppTabs />
+    </NavigationContainer>
+  );
+}
 
-// O AuthProvider usa componentes do React Native Paper, por isso fica dentro do PaperProvider.
 export default function App() {
-	return (
-		<PaperProvider theme={theme}>
-			<AuthProvider>
-				<NavigationContainer theme={navigationTheme}>
-					<StatusBar style="light" />
-					<RootNavigator />
-				</NavigationContainer>
-			</AuthProvider>
-		</PaperProvider>
-	);
+  return (
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <Navegacao />
+      </ThemeProvider>
+    </SafeAreaProvider>
+  );
 }
