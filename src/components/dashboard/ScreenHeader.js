@@ -1,6 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme } from '../theme';
+import { useTheme } from '../../theme';
 
 export default function ScreenHeader({ titulo, subtitulo, onVoltar }) {
   const tema = useTheme();

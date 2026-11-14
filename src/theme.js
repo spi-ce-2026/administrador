@@ -11,11 +11,11 @@ export const palette = {
 
 const claro = {
   modoEscuro: false,
-  fundo: '#F7F2FF',
-  header: palette.primaria,
+  fundo: '#F7F2FF', // Fundo principal
+  header: palette.primaria, // Fundo do cabeçalho
   headerTexto: '#FFFFFF',
   headerSubtexto: '#E3D4FF',
-  card: '#FFFFFF',
+  card: '#FFFFFF', // Fundo dos cards
   texto: palette.escuro,
   textoSecundario: '#6B5C85',
   numeroDestaque: palette.primaria,
@@ -28,6 +28,18 @@ const claro = {
   tabAtivo: palette.primaria,
   tabInativo: '#8A7BA3',
   badge: '#E5484D',
+  
+  // -- Cores adicionadas da tela de Mentores (getTheme claro) --
+  background: '#F5F6FA', 
+  cardBackground: '#FFFFFF',
+  textMain: '#1A1A1A',
+  textSub: '#f7f7f7',
+  headerBg: '#480CA8',
+  primary: '#480CA8',
+  cardBorder: '#480CA8',
+  tagBg: '#F0E6FF',
+  tagText: '#480CA8',
+  avatarBg: '#F0E6FF',
 };
 
 const escuro = {
@@ -49,11 +61,22 @@ const escuro = {
   tabAtivo: '#A47BFF',
   tabInativo: '#9C8CBF',
   badge: '#E5484D',
+
+  // -- Cores adicionadas da tela de Mentores (getTheme escuro) --
+  background: '#0D0914',
+  cardBackground: '#1E182D',
+  textMain: '#FFFFFF',
+  textSub: '#eae9f3',
+  headerBg: '#480CA8', // Mantido como no original, mas você pode mudar para #3A1192 se quiser padronizar com o 'header'
+  primary: '#480CA8',
+  cardBorder: '#5E27C5',
+  tagBg: '#2D1B4E',
+  tagText: '#B388FF',
+  avatarBg: '#480CA8',
 };
 
 const ThemeContext = createContext(null);
 
-// preferencia: 'sistema' (segue o celular), 'claro' ou 'escuro'
 export function ThemeProvider({ children }) {
   const esquemaSistema = useColorScheme();
   const [preferencia, setPreferencia] = useState('sistema');
@@ -78,12 +101,10 @@ export function ThemeProvider({ children }) {
   );
 }
 
-// Cores do tema atual (usado em todas as telas)
 export function useTheme() {
   return useContext(ThemeContext).tema;
 }
 
-// Para trocar o tema (usado no botão)
 export function useThemeControls() {
   const { modoEscuro, preferencia, setPreferencia, alternarTema } = useContext(ThemeContext);
   return { modoEscuro, preferencia, setPreferencia, alternarTema };

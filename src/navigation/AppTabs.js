@@ -1,10 +1,11 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import TabBar from '../../components/dashboard/TabBar';
-import DashboardScreen from '../../screens/dashboard/DashboardScreen';
-import MoreScreen from '../../screens/dashboard/MoreScreen';
-import PlaceholderScreen from '../../screens/dashboard/PlaceholderScreen';
-import { dashboardMock } from '../../mocks/dashboard/dashboard';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import TabBar from "../components/dashboard/TabBar";
+import DashboardScreen from "../screens/dashboard/DashboardScreen";
+import MoreScreen from "../screens/dashboard/MoreScreen";
+import PlaceholderScreen from "../screens/dashboard/PlaceholderScreen";
+import { dashboardMock } from "../mocks/dashboard/dashboard";
+import MentorsScreen from "../screens/mentor/MentorsScreen";
 
 const Tab = createBottomTabNavigator();
 const MaisStack = createNativeStackNavigator();
@@ -16,22 +17,22 @@ function MaisNavigator() {
       <MaisStack.Screen
         name="Vouchers"
         component={PlaceholderScreen}
-        initialParams={{ titulo: 'Vouchers', voltar: true }}
+        initialParams={{ titulo: "Vouchers", voltar: true }}
       />
       <MaisStack.Screen
         name="Tags"
         component={PlaceholderScreen}
-        initialParams={{ titulo: 'Tags', voltar: true }}
+        initialParams={{ titulo: "Tags", voltar: true }}
       />
       <MaisStack.Screen
         name="Notificacoes"
         component={PlaceholderScreen}
-        initialParams={{ titulo: 'Notificações', voltar: true }}
+        initialParams={{ titulo: "Notificações", voltar: true }}
       />
       <MaisStack.Screen
         name="Configuracoes"
         component={PlaceholderScreen}
-        initialParams={{ titulo: 'Configurações', voltar: true }}
+        initialParams={{ titulo: "Configurações", voltar: true }}
       />
     </MaisStack.Navigator>
   );
@@ -43,18 +44,21 @@ export default function AppTabs() {
       tabBar={(props) => <TabBar {...props} />}
       screenOptions={{ headerShown: false }}
     >
-      <Tab.Screen name="Inicio" component={DashboardScreen} options={{ title: 'Início' }} />
+      <Tab.Screen
+        name="Inicio"
+        component={DashboardScreen}
+        options={{ title: "Início" }}
+      />
       <Tab.Screen
         name="Mentores"
-        component={PlaceholderScreen}
-        initialParams={{ titulo: 'Mentores' }}
+        component={MentorsScreen} 
         options={{ tabBarBadge: dashboardMock.mentoresPendentes }}
       />
       <Tab.Screen
         name="Usuarios"
         component={PlaceholderScreen}
-        initialParams={{ titulo: 'Usuários' }}
-        options={{ title: 'Usuários' }}
+        initialParams={{ titulo: "Usuários" }}
+        options={{ title: "Usuários" }}
       />
       <Tab.Screen name="Mais" component={MaisNavigator} />
     </Tab.Navigator>

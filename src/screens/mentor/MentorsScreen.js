@@ -1,85 +1,64 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Switch, SafeAreaView, StatusBar, ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import MentorCard from '../../components/MentorCard';
-import { getTheme } from '../../theme/colors';
-import { MENTORS } from '../../mocks/mentorsData';
+import { 
+  StyleSheet, 
+  Text, 
+  View, 
+  ScrollView, 
+  TouchableOpacity, 
+  StatusBar 
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { useTheme } from '../../theme';
+import MentorCard from '../../components/mentor/MentorCard';
+import ThemeToggleButton from '../../components/ThemeToggleButton'; 
+import { MENTORS } from '../../mocks/mentor/mentorsData';
 
 export default function MentorsScreen() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // 1. Carrega o tema do AsyncStorage ao abrir a tela
-  useEffect(() => {
-    carregarTemaSalvo();
-  }, []);
-
-  const carregarTemaSalvo = async () => {
-    try {
-      const temaSalvo = await AsyncStorage.getItem('@preferencia_tema');
-      if (temaSalvo !== null) {
-        setIsDarkMode(JSON.parse(temaSalvo));
-      }
-    } catch (e) {
-      console.error('Erro ao ler tema', e);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // 2. Atualiza o useState e o AsyncStorage ao mesmo tempo
-  const alternarTema = async (novoValor) => {
-    setIsDarkMode(novoValor);
-    try {
-      await AsyncStorage.setItem('@preferencia_tema', JSON.stringify(novoValor));
-    } catch (e) {
-      console.error('Erro ao salvar tema', e);
-    }
-  };
-
-  const theme = getTheme(isDarkMode);
-
-  // Evita a tela piscar no modo claro antes de carregar o AsyncStorage
-  if (isLoading) {
-    return (
-      <View style={[styles.loadingContainer, { backgroundColor: theme.headerBg }]}>
-        <ActivityIndicator size="large" color="#FFFFFF" />
-      </View>
-    );
-  }
+  const theme = useTheme();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.headerBg }}>
+    // 1. O fundo da tela inteira agora é a cor principal (cinza no claro, escuro no dark)
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
       <StatusBar barStyle="light-content" backgroundColor={theme.headerBg} />
       
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <View>
-            <Text style={styles.headerSubtitle}>Gerenciamento</Text>
-            <Text style={styles.headerTitle}>Mentores</Text>
+      {/* 2. O SafeAreaView agora envolve APENAS o cabeçalho roxo, protegendo apenas o topo */}
+      <SafeAreaView style={{ backgroundColor: theme.headerBg }} edges={['top']}>
+        <View style={[styles.header, { backgroundColor: theme.headerBg }]}>
+          <View style={styles.headerTop}>
+            <View>
+              <Text style={[styles.headerSubtitle, { color: theme.textSub }]}>
+                Gerenciamento
+              </Text>
+              <Text style={[styles.headerTitle, { color: '#FFFFFF' }]}>
+                Mentores
+              </Text>
+            </View>
+            
+            <ThemeToggleButton />
           </View>
-          <Switch 
-            value={isDarkMode} 
-            onValueChange={alternarTema}
-            trackColor={{ false: '#767577', true: '#B388FF' }}
-            thumbColor={isDarkMode ? '#FFFFFF' : '#f4f3f4'}
-          />
-        </View>
 
-        <View style={styles.tabsContainer}>
-          <View style={styles.activeTab}>
-            <Text style={styles.activeTabText}>Pendentes • {MENTORS.length}</Text>
-            <View style={styles.activeTabIndicator} />
+          <View style={styles.tabsContainer}>
+            <View style={styles.activeTab}>
+              <Text style={[styles.activeTabText, { color: '#FFFFFF' }]}>
+                Pendentes • {MENTORS.length}
+              </Text>
+              <View style={[styles.activeTabIndicator, { backgroundColor: '#FFFFFF' }]} />
+            </View>
+            <TouchableOpacity>
+              <Text style={[styles.inactiveTabText, { color: theme.textSub }]}>
+                Aprovados
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={[styles.inactiveTabText, { color: theme.textSub }]}>
+                Reprovados
+              </Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity>
-            <Text style={styles.inactiveTabText}>Aprovados</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.inactiveTabText}>Reprovados</Text>
-          </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
 
+      {/* 3. O ScrollView rola em cima do fundo da View principal, eliminando a linha roxa inferior */}
       <ScrollView 
         style={[styles.mainContainer, { backgroundColor: theme.background }]}
         contentContainerStyle={styles.scrollPadding}
@@ -88,18 +67,12 @@ export default function MentorsScreen() {
           <MentorCard key={mentor.id} mentor={mentor} theme={theme} />
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   header: {
-    backgroundColor: '#480CA8',
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 0,
@@ -108,14 +81,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 2,
   },
   headerSubtitle: {
-    color: '#D1C4E9',
     fontSize: 14,
   },
   headerTitle: {
-    color: '#FFFFFF',
     fontSize: 28,
     fontWeight: 'bold',
   },
@@ -128,20 +99,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   activeTabText: {
-    color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 14,
     marginBottom: 8,
   },
   activeTabIndicator: {
     height: 3,
-    backgroundColor: '#FFFFFF',
     width: '100%',
     borderTopLeftRadius: 2,
     borderTopRightRadius: 2,
   },
   inactiveTabText: {
-    color: '#B39DDB',
     fontSize: 14,
     marginBottom: 11,
   },
@@ -150,5 +118,6 @@ const styles = StyleSheet.create({
   },
   scrollPadding: {
     padding: 20,
+    paddingBottom: 40,
   },
 });

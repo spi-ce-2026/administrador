@@ -1,6 +1,6 @@
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import AppTabs from './src/navigation/dashboard/AppTabs';
+import AppTabs from './src/navigation/AppTabs';
 import { ThemeProvider, useTheme } from './src/theme';
 
 function Navegacao() {

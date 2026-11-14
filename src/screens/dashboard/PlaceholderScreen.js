@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../theme';
-import ScreenHeader from '../components/ScreenHeader';
+import ScreenHeader from '../../components/dashboard/ScreenHeader';
 
 export default function PlaceholderScreen({ navigation, route }) {
   const tema = useTheme();
