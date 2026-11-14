@@ -1,0 +1,33 @@
+// Paleta do PDF (modo claro e escuro)[cite: 1]
+export const THEMES = {
+  light: {
+    bg: '#F6F2FC',
+    card: '#FFFFFF',
+    text: '#1E0A3C',
+    textSoft: '#5E5575',
+    primary: '#5000B7',
+    accent: '#5000B7',
+    iconBg: '#EFE6FF',
+    iconFg: '#5000B7',
+    successBg: '#E3F6EE',
+    successFg: '#0F6B45',
+    expiredBg: '#F1EFE8',
+    expiredFg: '#6F6B5E',
+    border: '#E4DCF3',
+  },
+  dark: {
+    bg: '#120726',
+    card: '#21113F',
+    text: '#FFFFFF',
+    textSoft: '#B9AED3',
+    primary: '#5000B7',
+    accent: '#A77BFF',
+    iconBg: '#3A0F8A',
+    iconFg: '#A77BFF',
+    successBg: '#16382B',
+    successFg: '#5FD6A0',
+    expiredBg: '#2C2840',
+    expiredFg: '#A8A3BD',
+    border: '#33225A',
+  },
+};
