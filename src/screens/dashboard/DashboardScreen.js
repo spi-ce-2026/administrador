@@ -10,9 +10,9 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme, palette } from '../../theme';
 import StatCard from '../../components/dashboard/StatCard';
-import LoadingSpinner from '../components/LoadingSpinner';
-import ErrorDisplay from '../components/ErrorDisplay';
-import ThemeToggleButton from '../../components/dashboard/ThemeToggleButton';
+import LoadingSpinner from '../../components/dashboard/LoadingSpinner';
+import ErrorDisplay from '../../components/dashboard/ErrorDisplay';
+import ThemeToggleButton from '../../components/ThemeToggleButton';
 import { buscarDashboard } from '../../mocks/dashboard/dashboard';
 
 export default function DashboardScreen() {

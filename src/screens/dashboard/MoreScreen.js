@@ -1,7 +1,7 @@
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../theme';
-import ScreenHeader from '../components/ScreenHeader';
+import ScreenHeader from '../../components/dashboard/ScreenHeader';
 
 const ITENS = [
   { rota: 'Vouchers', titulo: 'Vouchers', descricao: 'Gerar e gerenciar vouchers', icone: 'ticket-outline' },

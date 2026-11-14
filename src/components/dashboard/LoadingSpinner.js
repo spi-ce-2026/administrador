@@ -1,5 +1,5 @@
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
-import { useTheme } from '../theme';
+import { useTheme } from '../../theme';
 
 export default function LoadingSpinner() {
   const tema = useTheme();

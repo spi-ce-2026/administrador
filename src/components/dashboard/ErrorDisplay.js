@@ -1,6 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme } from '../theme';
+import { useTheme } from '../../theme';
 
 export default function ErrorDisplay({ mensagem, onTentarNovamente }) {
   const tema = useTheme();
