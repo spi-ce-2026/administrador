@@ -12,16 +12,71 @@ import { useTheme } from '../../theme';
 import MentorCard from '../../components/mentor/MentorCard';
 import ThemeToggleButton from '../../components/ThemeToggleButton'; 
 import { MENTORS } from '../../mocks/mentor/mentorsData';
+import { mentorService } from '../../services/mentor/mentorService';
+
+const TABS = [
+  { key: 'PENDENTE', label: 'Pendentes' },
+  { key: 'APROVADO', label: 'Aprovados' },
+  { key: 'REPROVADO', label: 'Reprovados' },
+];
 
 export default function MentorsScreen() {
   const theme = useTheme();
+  const [mentors, setMentors] = useState([]);
+  const [activeTab, setActiveTab] = useState('PENDENTE');
+
+  useEffect(() => {
+    loadMentors();
+  }, []);
+
+  async function loadMentors() {
+    try {
+      const data = await mentorService.getMentors();
+      setMentors(data);
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível carregar os mentores.');
+    }
+  }
+
+  async function handleApprove(id) {
+    try {
+      await mentorService.approveMentor(id);
+      setMentors((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, status: 'APROVADO' } : m))
+      );
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível aprovar o mentor.');
+    }
+  }
+
+  async function handleReject(id) {
+    try {
+      await mentorService.rejectMentor(id);
+      setMentors((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, status: 'REPROVADO' } : m))
+      );
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível reprovar o mentor.');
+    }
+  }
+
+  async function handleResetToPending(id) {
+    try {
+      await mentorService.resetMentorToPending(id);
+      setMentors((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, status: 'PENDENTE' } : m))
+      );
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível retornar o mentor para pendente.');
+    }
+  }
+
+  const filteredMentors = mentors.filter((m) => m.status === activeTab);
 
   return (
-    // 1. O fundo da tela inteira agora é a cor principal (cinza no claro, escuro no dark)
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <StatusBar barStyle="light-content" backgroundColor={theme.headerBg} />
-      
-      {/* 2. O SafeAreaView agora envolve APENAS o cabeçalho roxo, protegendo apenas o topo */}
+
       <SafeAreaView style={{ backgroundColor: theme.headerBg }} edges={['top']}>
         <View style={[styles.header, { backgroundColor: theme.headerBg }]}>
           <View style={styles.headerTop}>
@@ -33,38 +88,58 @@ export default function MentorsScreen() {
                 Mentores
               </Text>
             </View>
-            
+
             <ThemeToggleButton />
           </View>
 
           <View style={styles.tabsContainer}>
-            <View style={styles.activeTab}>
-              <Text style={[styles.activeTabText, { color: '#FFFFFF' }]}>
-                Pendentes • {MENTORS.length}
-              </Text>
-              <View style={[styles.activeTabIndicator, { backgroundColor: '#FFFFFF' }]} />
-            </View>
-            <TouchableOpacity>
-              <Text style={[styles.inactiveTabText, { color: theme.textSub }]}>
-                Aprovados
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={[styles.inactiveTabText, { color: theme.textSub }]}>
-                Reprovados
-              </Text>
-            </TouchableOpacity>
+            {TABS.map((tab) => {
+              const isActive = activeTab === tab.key;
+              const count = mentors.filter((m) => m.status === tab.key).length;
+
+              return (
+                <TouchableOpacity
+                  key={tab.key}
+                  style={isActive ? styles.activeTab : undefined}
+                  onPress={() => setActiveTab(tab.key)}
+                >
+                  <Text
+                    style={
+                      isActive
+                        ? [styles.activeTabText, { color: '#FFFFFF' }]
+                        : [styles.inactiveTabText, { color: theme.textSub }]
+                    }
+                  >
+                    {isActive ? `${tab.label} • ${count}` : tab.label}
+                  </Text>
+                  {isActive && (
+                    <View
+                      style={[
+                        styles.activeTabIndicator,
+                        { backgroundColor: '#FFFFFF' },
+                      ]}
+                    />
+                  )}
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
       </SafeAreaView>
 
-      {/* 3. O ScrollView rola em cima do fundo da View principal, eliminando a linha roxa inferior */}
-      <ScrollView 
+      <ScrollView
         style={[styles.mainContainer, { backgroundColor: theme.background }]}
         contentContainerStyle={styles.scrollPadding}
       >
-        {MENTORS.map(mentor => (
-          <MentorCard key={mentor.id} mentor={mentor} theme={theme} />
+        {filteredMentors.map((mentor) => (
+          <MentorCard
+            key={mentor.id}
+            mentor={mentor}
+            theme={theme}
+            onApprove={() => handleApprove(mentor.id)}
+            onReject={() => handleReject(mentor.id)}
+            onResetToPending={() => handleResetToPending(mentor.id)}
+          />
         ))}
       </ScrollView>
     </View>
