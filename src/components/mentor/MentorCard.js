@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -27,7 +27,6 @@ export default function MentorCard({
   theme,
   onApprove,
   onReject,
-  onResetToPending,
 }) {
   const [expanded, setExpanded] = useState(mentor.isExpandedDefault ?? false);
 
@@ -110,7 +109,7 @@ export default function MentorCard({
             </TouchableOpacity>
           ) : null}
 
-          {isPending ? (
+          {isPending && (
             <View style={styles.actionsContainer}>
               <TouchableOpacity style={styles.btnReprovar} onPress={confirmReject}>
                 <Text style={styles.txtReprovar}>Reprovar</Text>
@@ -120,17 +119,6 @@ export default function MentorCard({
                 onPress={confirmApprove}
               >
                 <Text style={styles.txtAprovar}>Aprovar</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.actionsContainer}>
-              <TouchableOpacity
-                style={[styles.btnVoltarPendente, { borderColor: theme.cardBorder }]}
-                onPress={onResetToPending}
-              >
-                <Text style={[styles.txtVoltarPendente, { color: theme.textMain }]}>
-                  Voltar para pendente
-                </Text>
               </TouchableOpacity>
             </View>
           )}
@@ -252,16 +240,6 @@ const styles = StyleSheet.create({
   },
   txtAprovar: {
     color: '#FFFFFF',
-    fontWeight: 'bold',
-  },
-  btnVoltarPendente: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    alignItems: 'center',
-  },
-  txtVoltarPendente: {
     fontWeight: 'bold',
   },
 });

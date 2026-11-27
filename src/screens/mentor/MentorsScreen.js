@@ -1,17 +1,18 @@
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  ScrollView, 
-  TouchableOpacity, 
-  StatusBar 
+import { useState, useEffect } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  StatusBar,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../theme';
 import MentorCard from '../../components/mentor/MentorCard';
-import ThemeToggleButton from '../../components/ThemeToggleButton'; 
-import { MENTORS } from '../../mocks/mentor/mentorsData';
+import ThemeToggleButton from '../../components/ThemeToggleButton';
 import { mentorService } from '../../services/mentor/mentorService';
 
 const TABS = [
@@ -33,7 +34,7 @@ export default function MentorsScreen() {
     try {
       const data = await mentorService.getMentors();
       setMentors(data);
-    } catch (error) {
+    } catch {
       Alert.alert('Erro', 'Não foi possível carregar os mentores.');
     }
   }
@@ -44,7 +45,7 @@ export default function MentorsScreen() {
       setMentors((prev) =>
         prev.map((m) => (m.id === id ? { ...m, status: 'APROVADO' } : m))
       );
-    } catch (error) {
+    } catch {
       Alert.alert('Erro', 'Não foi possível aprovar o mentor.');
     }
   }
@@ -55,7 +56,7 @@ export default function MentorsScreen() {
       setMentors((prev) =>
         prev.map((m) => (m.id === id ? { ...m, status: 'REPROVADO' } : m))
       );
-    } catch (error) {
+    } catch {
       Alert.alert('Erro', 'Não foi possível reprovar o mentor.');
     }
   }
@@ -66,7 +67,7 @@ export default function MentorsScreen() {
       setMentors((prev) =>
         prev.map((m) => (m.id === id ? { ...m, status: 'PENDENTE' } : m))
       );
-    } catch (error) {
+    } catch {
       Alert.alert('Erro', 'Não foi possível retornar o mentor para pendente.');
     }
   }
