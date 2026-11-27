@@ -3,6 +3,7 @@ import { Alert, FlatList, Pressable, Share, StyleSheet, Text, View } from 'react
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { palette, useTheme } from '../../theme';
 import ScreenHeader from '../../components/dashboard/ScreenHeader';
+import ThemeToggleButton from '../../components/ThemeToggleButton';
 import LoadingSpinner from '../../components/dashboard/LoadingSpinner';
 import ErrorDisplay from '../../components/dashboard/ErrorDisplay';
 import AcoesVoucher from '../../components/vouchers/AcoesVoucher';
@@ -173,7 +174,12 @@ export default function VouchersScreen({ navigation }) {
 
   return (
     <View style={[styles.tela, { backgroundColor: tema.fundo }]}>
-      <ScreenHeader titulo="Vouchers" onVoltar={() => navigation.goBack()} direita={acoesHeader}>
+      <ScreenHeader
+        titulo="Vouchers"
+        onVoltar={() => navigation.goBack()}
+        esquerda={<ThemeToggleButton />}
+        direita={acoesHeader}
+      >
         <View style={styles.abas}>
           {ABAS.map((item) => {
             const ativa = aba === item.chave;

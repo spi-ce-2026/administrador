@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, Text, Pressable, TextInput, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { palette, useTheme } from '../../theme';
-import { AREAS, lerData, mascararData } from '../../utils/vouchers';
+import { AREAS, mascararData, validarValidade } from '../../utils/vouchers';
 
 const QUANTIDADE_MAXIMA = 500;
 
@@ -18,6 +18,7 @@ export default function GerarVoucher({ aoGerar }) {
   const [quantidade, setQuantidade] = useState('25');
   const [validade, setValidade] = useState('');
   const [erro, setErro] = useState('');
+  const [erroValidade, setErroValidade] = useState('');
 
   const total = Math.min(QUANTIDADE_MAXIMA, Math.max(0, Number(quantidade) || 0));
 
@@ -27,21 +28,15 @@ export default function GerarVoucher({ aoGerar }) {
   };
 
   const enviar = () => {
-    if (total < 1) {
-      setErro('Informe ao menos 1 voucher.');
-      return;
-    }
-    let expiresAt = null;
-    if (validade) {
-      expiresAt = lerData(validade);
-      if (!expiresAt) {
-        setErro('Use uma data válida no formato dd/mm/aaaa.');
-        return;
-      }
-    }
+    // Validade obrigatória: bloqueia vazia, formato incompleto, mês/dia inexistente e data passada.
+    const { iso: expiresAt, erro: erroData } = validarValidade(validade);
+    setErro(total < 1 ? 'Informe ao menos 1 voucher.' : '');
+    setErroValidade(erroData ?? '');
+    if (total < 1 || erroData) return;
     aoGerar({ quantidade: total, type: tipo, area: tipo === 'restricted' ? area : null, expiresAt });
   };
 
+  const corErro = tema.perigo ?? '#E5484D';
   const campo = [styles.campo, { borderColor: tema.borda, backgroundColor: tema.fundo }];
 
   return (
@@ -114,14 +109,14 @@ export default function GerarVoucher({ aoGerar }) {
         </Pressable>
       </View>
 
-      <Text style={[styles.rotulo, { color: tema.icone }]}>VALIDADE (OPCIONAL)</Text>
-      <View style={campo}>
+      <Text style={[styles.rotulo, { color: tema.icone }]}>VALIDADE</Text>
+      <View style={[campo, erroValidade && { borderColor: corErro }]}>
         <MaterialCommunityIcons name="calendar-blank-outline" size={20} color={tema.icone} />
         <TextInput
           value={validade}
           onChangeText={(texto) => {
             setValidade(mascararData(texto));
-            setErro('');
+            setErroValidade('');
           }}
           placeholder="dd/mm/aaaa"
           placeholderTextColor={tema.textoSecundario}
@@ -131,7 +126,12 @@ export default function GerarVoucher({ aoGerar }) {
         />
       </View>
 
-      {erro ? <Text style={[styles.erro, { color: tema.perigo }]}>{erro}</Text> : null}
+      {erroValidade ? (
+        <Text style={[styles.erro, { color: corErro }]} accessibilityLiveRegion="polite">
+          {erroValidade}
+        </Text>
+      ) : null}
+      {erro ? <Text style={[styles.erro, { color: corErro }]}>{erro}</Text> : null}
 
       <Pressable
         onPress={enviar}
