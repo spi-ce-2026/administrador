@@ -1,7 +1,7 @@
 import { MENTORS } from '../../mocks/mentor/mentorsData';
 
 const USE_MOCK = true;
-const API_URL = 'http://SEU_IP_LOCAL:8080';
+const API_URL = 'https://fluffy-meme-q764p6rwqw4jcq9v-8085.app.github.dev';
 
 let mockStore = [...MENTORS];
 
@@ -38,7 +38,7 @@ function mapMentorFromApi(dto) {
 }
 
 export const mentorService = {
-  // GET /admin/mentors/pending
+  // GET /admin/mentors (retorna PENDENTE, APROVADO e REPROVADO para persistir após F5)
   async getMentors() {
     if (USE_MOCK) {
       return new Promise((resolve) => {
@@ -46,13 +46,16 @@ export const mentorService = {
       });
     }
 
-    const response = await fetch(`${API_URL}/admin/mentors/pending`);
-    if (!response.ok) throw new Error('Erro ao buscar mentores pendentes');
+    const response = await fetch(`${API_URL}/admin/mentors`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erro ao buscar mentores: ${errorText}`);
+    }
     const data = await response.json();
     return data.map(mapMentorFromApi);
   },
 
-  // POST /admin/mentors/{id}/approve
+  // POST /admin/mentors/{id}/approve -> { aprovado: true, motivo: null }
   async approveMentor(id) {
     if (USE_MOCK) {
       mockStore = mockStore.map((m) =>
@@ -63,12 +66,24 @@ export const mentorService = {
 
     const response = await fetch(`${API_URL}/admin/mentors/${id}/approve`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        aprovado: true,
+        motivo: null,
+      }),
     });
-    if (!response.ok) throw new Error('Erro ao aprovar mentor');
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erro ao aprovar mentor: ${errorText}`);
+    }
+    return response.json();
   },
 
-  // POST /admin/mentors/{id}/reject (ou endpoint equivalente de reprovação)
-  async rejectMentor(id) {
+  // POST /admin/mentors/{id}/approve -> { aprovado: false, motivo }
+  async rejectMentor(id, motivo = '') {
     if (USE_MOCK) {
       mockStore = mockStore.map((m) =>
         m.id === id ? { ...m, status: 'REPROVADO' } : m
@@ -76,24 +91,21 @@ export const mentorService = {
       return Promise.resolve();
     }
 
-    const response = await fetch(`${API_URL}/admin/mentors/${id}/reject`, {
+    const response = await fetch(`${API_URL}/admin/mentors/${id}/approve`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        aprovado: false,
+        motivo: motivo || 'Reprovado pelo administrador',
+      }),
     });
-    if (!response.ok) throw new Error('Erro ao reprovar mentor');
-  },
 
-  // Ativo no mock para permitir testes cíclicos
-  async resetMentorToPending(id) {
-    if (USE_MOCK) {
-      mockStore = mockStore.map((m) =>
-        m.id === id ? { ...m, status: 'PENDENTE' } : m
-      );
-      return Promise.resolve();
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erro ao reprovar mentor: ${errorText}`);
     }
-
-    const response = await fetch(`${API_URL}/admin/mentors/${id}/pending`, {
-      method: 'POST',
-    });
-    if (!response.ok) throw new Error('Erro ao retornar mentor para pendente');
+    return response.json();
   },
 };
