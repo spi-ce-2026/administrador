@@ -6,6 +6,8 @@ import MoreScreen from "../screens/dashboard/MoreScreen";
 import PlaceholderScreen from "../screens/dashboard/PlaceholderScreen";
 import { dashboardMock } from "../mocks/dashboard/dashboard";
 import MentorsScreen from "../screens/mentor/MentorsScreen";
+import VouchersScreen from "../screens/voucher/VouchersScreen"; // Corrigido aqui!
+import TagsScreen from "../screens/tags/TagsScreen";
 
 const Tab = createBottomTabNavigator();
 const MaisStack = createNativeStackNavigator();
@@ -16,13 +18,11 @@ function MaisNavigator() {
       <MaisStack.Screen name="MaisMenu" component={MoreScreen} />
       <MaisStack.Screen
         name="Vouchers"
-        component={PlaceholderScreen}
-        initialParams={{ titulo: "Vouchers", voltar: true }}
+        component={VouchersScreen} // Trocado aqui!
       />
       <MaisStack.Screen
         name="Tags"
-        component={PlaceholderScreen}
-        initialParams={{ titulo: "Tags", voltar: true }}
+        component={TagsScreen}
       />
       <MaisStack.Screen
         name="Notificacoes"
@@ -51,7 +51,7 @@ export default function AppTabs() {
       />
       <Tab.Screen
         name="Mentores"
-        component={MentorsScreen} 
+        component={MentorsScreen}
         options={{ tabBarBadge: dashboardMock.mentoresPendentes }}
       />
       <Tab.Screen

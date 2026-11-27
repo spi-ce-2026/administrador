@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { palette, useTheme } from '../theme';
-import ScreenHeader from '../components/dashboard/ScreenHeader';
-import LoadingSpinner from '../components/dashboard/LoadingSpinner';
-import ErrorDisplay from '../components/dashboard/ErrorDisplay';
-import AcoesVoucher from '../components/vouchers/AcoesVoucher';
-import Aviso from '../components/vouchers/Aviso';
-import BottomSheet from '../components/vouchers/BottomSheet';
-import CartaoVoucher from '../components/vouchers/CartaoVoucher';
-import GerarVoucher from '../components/vouchers/GerarVoucher';
-import ValidarVoucher from '../components/vouchers/ValidarVoucher';
-import { buscarVouchers } from '../mocks/vouchers/vouchers';
-import { ABAS, gerarCodigosUnicos, paraCsv } from '../utils/vouchers';
+import { palette, useTheme } from '../../theme';
+import ScreenHeader from '../../components/dashboard/ScreenHeader';
+import LoadingSpinner from '../../components/dashboard/LoadingSpinner';
+import ErrorDisplay from '../../components/dashboard/ErrorDisplay';
+import AcoesVoucher from '../../components/vouchers/AcoesVoucher';
+import Aviso from '../../components/vouchers/Aviso';
+import BottomSheet from '../../components/vouchers/BottomSheet';
+import CartaoVoucher from '../../components/vouchers/CartaoVoucher';
+import GerarVoucher from '../../components/vouchers/GerarVoucher';
+import ValidarVoucher from '../../components/vouchers/ValidarVoucher';
+import { buscarVouchers } from '../../mocks/vouchers/vouchers';
+import { ABAS, gerarCodigosUnicos, paraCsv } from '../../utils/vouchers';
 
 const FILTROS = [
   { chave: 'all', rotulo: 'Todos' },
