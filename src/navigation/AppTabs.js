@@ -18,7 +18,7 @@ function MaisNavigator() {
       <MaisStack.Screen name="MaisMenu" component={MoreScreen} />
       <MaisStack.Screen
         name="Vouchers"
-        component={VouchersScreen} // Trocado aqui!
+        component={VouchersScreen}
       />
       <MaisStack.Screen
         name="Tags"

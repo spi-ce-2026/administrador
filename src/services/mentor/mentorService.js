@@ -1,9 +1,15 @@
 import { MENTORS } from '../../mocks/mentor/mentorsData';
+import {
+  CHANGE_REQUESTS,
+  EXPIRED_MENTORSHIPS,
+} from '../../mocks/mentor/mentorshipsData';
 
 const USE_MOCK = true;
 const API_URL = 'https://fluffy-meme-q764p6rwqw4jcq9v-8085.app.github.dev';
 
 let mockStore = [...MENTORS];
+let mockChangeRequests = [...CHANGE_REQUESTS];
+let mockExpiredMentorships = [...EXPIRED_MENTORSHIPS];
 
 function formatInitials(name = '') {
   return name
@@ -33,12 +39,24 @@ function mapMentorFromApi(dto) {
       : [],
     link: dto.linkAgendamento || dto.link || '',
     status: dto.statusAprovacao || dto.status || 'PENDENTE',
+    rejectionReason: dto.motivo || '',
     isExpandedDefault: false,
   };
 }
 
+function mapChangeRequestFromApi(dto) {
+  return {
+    id: String(dto.id),
+    menteeName: dto.mentoradoNome || dto.menteeName || 'Mentorado',
+    currentMentorName: dto.mentorAtualNome || dto.currentMentorName || 'Mentor Atual',
+    reason: dto.justificativa || dto.motivo || dto.reason || 'Sem justificativa informada.',
+    createdAt: dto.dataSolicitacao || dto.createdAt || '',
+    status: dto.status || 'PENDENTE',
+  };
+}
+
 export const mentorService = {
-  // GET /admin/mentors (retorna PENDENTE, APROVADO e REPROVADO para persistir após F5)
+  // GET /admin/mentors
   async getMentors() {
     if (USE_MOCK) {
       return new Promise((resolve) => {
@@ -55,23 +73,21 @@ export const mentorService = {
     return data.map(mapMentorFromApi);
   },
 
-  // POST /admin/mentors/{id}/approve -> { aprovado: true, motivo: null }
-  async approveMentor(id) {
+  // POST /admin/mentors/{id}/approve -> { aprovado: true, motivo }
+  async approveMentor(id, motivo = null) {
     if (USE_MOCK) {
       mockStore = mockStore.map((m) =>
-        m.id === id ? { ...m, status: 'APROVADO' } : m
+        m.id === id ? { ...m, status: 'APROVADO', approvalNote: motivo } : m
       );
       return Promise.resolve();
     }
 
     const response = await fetch(`${API_URL}/admin/mentors/${id}/approve`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         aprovado: true,
-        motivo: null,
+        motivo: motivo || null,
       }),
     });
 
@@ -86,16 +102,20 @@ export const mentorService = {
   async rejectMentor(id, motivo = '') {
     if (USE_MOCK) {
       mockStore = mockStore.map((m) =>
-        m.id === id ? { ...m, status: 'REPROVADO' } : m
+        m.id === id
+          ? {
+              ...m,
+              status: 'REPROVADO',
+              rejectionReason: motivo || 'Reprovado pelo administrador',
+            }
+          : m
       );
       return Promise.resolve();
     }
 
     const response = await fetch(`${API_URL}/admin/mentors/${id}/approve`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         aprovado: false,
         motivo: motivo || 'Reprovado pelo administrador',
@@ -106,6 +126,62 @@ export const mentorService = {
       const errorText = await response.text();
       throw new Error(`Erro ao reprovar mentor: ${errorText}`);
     }
+    return response.json();
+  },
+
+  // GET /admin/mentorships/change-requests
+  async getChangeRequests() {
+    if (USE_MOCK) {
+      return new Promise((resolve) => {
+        setTimeout(() => resolve([...mockChangeRequests]), 150);
+      });
+    }
+
+    const response = await fetch(`${API_URL}/admin/mentorships/change-requests`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erro ao buscar solicitações de troca: ${errorText}`);
+    }
+    const data = await response.json();
+    return data.map(mapChangeRequestFromApi);
+  },
+
+  // POST /admin/mentorships/change-requests/{id}/approve
+  async handleChangeRequest(id, aprovado, motivo = null) {
+    if (USE_MOCK) {
+      mockChangeRequests = mockChangeRequests.filter((req) => req.id !== id);
+      return Promise.resolve();
+    }
+
+    const response = await fetch(
+      `${API_URL}/admin/mentorships/change-requests/${id}/approve`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          aprovado,
+          motivo: motivo || null,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erro ao processar solicitação de troca: ${errorText}`);
+    }
+    return response.json();
+  },
+
+  // Mentorias Expiradas (> 7 dias sem agendamento)
+  async getExpiredMentorships() {
+    if (USE_MOCK) {
+      return new Promise((resolve) => {
+        setTimeout(() => resolve([...mockExpiredMentorships]), 150);
+      });
+    }
+
+    const response = await fetch(`${API_URL}/admin/mentorships/expired`);
+    if (!response.ok) return [];
     return response.json();
   },
 };
