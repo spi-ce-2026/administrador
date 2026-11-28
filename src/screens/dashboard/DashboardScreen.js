@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   ScrollView,
   View,
@@ -10,12 +11,13 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme, palette } from '../../theme';
 import StatCard from '../../components/dashboard/StatCard';
+import ProgramHealth from '../../components/dashboard/ProgramHealth';
 import LoadingSpinner from '../../components/dashboard/LoadingSpinner';
 import ErrorDisplay from '../../components/dashboard/ErrorDisplay';
 import ThemeToggleButton from '../../components/ThemeToggleButton';
-import { buscarDashboard } from '../../mocks/dashboard/dashboard';
+import { buscarDashboard } from '../../services/dashboardService';
 
-export default function DashboardScreen() {
+export default function DashboardScreen({ navigation }) {
   const tema = useTheme();
   const [dados, setDados] = useState(null);
   const [carregando, setCarregando] = useState(true);
@@ -35,9 +37,12 @@ export default function DashboardScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    carregar();
-  }, [carregar]);
+  // Recarrega sempre que a tela volta a ficar visível (ex.: depois de aprovar um mentor).
+  useFocusEffect(
+    useCallback(() => {
+      carregar();
+    }, [carregar])
+  );
 
   if (carregando) return <LoadingSpinner />;
 
@@ -53,9 +58,14 @@ export default function DashboardScreen() {
     );
   }
 
-  const variacao = dados.variacaoMentorias;
+  // O mock antigo mandava variacaoMentorias (18); o novo manda crescimentoMes (0.18).
+  const variacao = dados.variacaoMentorias ?? Math.round((dados.crescimentoMes ?? 0) * 100);
   const subiu = variacao >= 0;
   const corTendencia = subiu ? tema.tendencia : '#E5484D';
+
+  // Cards como atalho (sugestão do documento de navegação)
+  const irParaUsuarios = () => navigation.navigate('Usuarios', { screen: 'UsersList' });
+  const irParaMentores = () => navigation.navigate('Mentores');
 
   return (
     <View style={[styles.tela, { backgroundColor: tema.fundo }]}>
@@ -111,6 +121,7 @@ export default function DashboardScreen() {
               icone="account-plus-outline"
               valor={dados.novosCadastros}
               rotulo="Novos cadastros"
+              onPress={irParaUsuarios}
             />
             <StatCard
               icone="clock-outline"
@@ -125,6 +136,7 @@ export default function DashboardScreen() {
               corIcone={palette.alerta}
               valor={dados.mentoresPendentes}
               rotulo="Mentores pend."
+              onPress={irParaMentores}
             />
             <StatCard
               icone="ticket-outline"
@@ -133,6 +145,12 @@ export default function DashboardScreen() {
             />
           </View>
         </View>
+
+        {/* Saúde do programa → Analytics */}
+        <ProgramHealth
+          analytics={dados.analytics}
+          onVerAnalytics={() => navigation.navigate('Analytics')}
+        />
       </ScrollView>
     </View>
   );
