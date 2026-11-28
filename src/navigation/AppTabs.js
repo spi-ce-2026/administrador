@@ -8,14 +8,40 @@ import { dashboardMock } from "../mocks/dashboard/dashboard";
 import MentorsScreen from "../screens/mentor/MentorsScreen";
 import VouchersScreen from "../screens/voucher/VouchersScreen"; // Corrigido aqui!
 import TagsScreen from "../screens/tags/TagsScreen";
+import UsersScreen from "../screens/UsersScreen";
+import UserDetailScreen from "../screens/users/UserDetailScreen";
+import AnalyticsScreen from "../screens/analytics/AnalyticsScreen";
 
 const Tab = createBottomTabNavigator();
 const MaisStack = createNativeStackNavigator();
+const UsuariosStack = createNativeStackNavigator();
+const InicioStack = createNativeStackNavigator();
+
+// Início: Dashboard → Analytics
+function InicioNavigator() {
+  return (
+    <InicioStack.Navigator screenOptions={{ headerShown: false }}>
+      <InicioStack.Screen name="Dashboard" component={DashboardScreen} />
+      <InicioStack.Screen name="Analytics" component={AnalyticsScreen} />
+    </InicioStack.Navigator>
+  );
+}
+
+// Usuários: Lista → Detalhe
+function UsuariosNavigator() {
+  return (
+    <UsuariosStack.Navigator screenOptions={{ headerShown: false }}>
+      <UsuariosStack.Screen name="UsersList" component={UsersScreen} />
+      <UsuariosStack.Screen name="UserDetail" component={UserDetailScreen} />
+    </UsuariosStack.Navigator>
+  );
+}
 
 function MaisNavigator() {
   return (
     <MaisStack.Navigator screenOptions={{ headerShown: false }}>
       <MaisStack.Screen name="MaisMenu" component={MoreScreen} />
+      <MaisStack.Screen name="Analytics" component={AnalyticsScreen} />
       <MaisStack.Screen
         name="Vouchers"
         component={VouchersScreen}
@@ -46,7 +72,7 @@ export default function AppTabs() {
     >
       <Tab.Screen
         name="Inicio"
-        component={DashboardScreen}
+        component={InicioNavigator}
         options={{ title: "Início" }}
       />
       <Tab.Screen
@@ -56,8 +82,7 @@ export default function AppTabs() {
       />
       <Tab.Screen
         name="Usuarios"
-        component={PlaceholderScreen}
-        initialParams={{ titulo: "Usuários" }}
+        component={UsuariosNavigator}
         options={{ title: "Usuários" }}
       />
       <Tab.Screen name="Mais" component={MaisNavigator} />

@@ -1,15 +1,26 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { Pressable, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../theme';
 
-export default function StatCard({ icone, corIcone, valor, rotulo }) {
+// Card do grid 2×2. onPress é opcional: quando passado, o card vira atalho
+// (sugestão do documento de navegação); sem ele, se comporta como antes.
+export default function StatCard({ icone, corIcone, valor, rotulo, onPress }) {
   const tema = useTheme();
   return (
-    <View style={[styles.card, { backgroundColor: tema.card }]}>
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      accessibilityRole={onPress ? 'button' : undefined}
+      accessibilityLabel={`${valor} ${rotulo}`}
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: tema.card, opacity: pressed ? 0.8 : 1 },
+      ]}
+    >
       <MaterialCommunityIcons name={icone} size={24} color={corIcone ?? tema.icone} />
       <Text style={[styles.valor, { color: tema.texto }]}>{valor}</Text>
       <Text style={[styles.rotulo, { color: tema.textoSecundario }]}>{rotulo}</Text>
-    </View>
+    </Pressable>
   );
 }
 

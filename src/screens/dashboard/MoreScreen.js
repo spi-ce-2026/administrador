@@ -4,6 +4,7 @@ import { useTheme } from '../../theme';
 import ScreenHeader from '../../components/dashboard/ScreenHeader';
 
 const ITENS = [
+  { rota: 'Analytics', titulo: 'Analytics', descricao: 'Desempenho do programa', icone: 'chart-line' },
   { rota: 'Vouchers', titulo: 'Vouchers', descricao: 'Gerar e gerenciar vouchers', icone: 'ticket-outline' },
   { rota: 'Tags', titulo: 'Tags', descricao: 'Organizar as tags das mentorias', icone: 'tag-outline' },
   { rota: 'Notificacoes', titulo: 'Notificações', descricao: 'Avisos da plataforma', icone: 'bell-outline' },
