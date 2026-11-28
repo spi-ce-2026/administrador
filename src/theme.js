@@ -30,10 +30,10 @@ const claro = {
   badge: '#E5484D',
   
   // -- Cores adicionadas da tela de Mentores (getTheme claro) --
-  background: '#F5F6FA', 
+   background: '#F5F6FA', 
   cardBackground: '#FFFFFF',
   textMain: '#1A1A1A',
-  textSub: '#f7f7f7',
+  textSub: '#1A1A1A',
   headerBg: '#480CA8',
   primary: '#480CA8',
   cardBorder: '#480CA8',
@@ -90,7 +90,7 @@ const escuro = {
   badge: '#E5484D',
 
   // -- Cores adicionadas da tela de Mentores (getTheme escuro) --
-  background: '#0D0914',
+ background: '#0D0914',
   cardBackground: '#1E182D',
   textMain: '#FFFFFF',
   textSub: '#eae9f3',

@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,19 +8,7 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-
-function confirmAction(title, message, onConfirm) {
-  if (Platform.OS === 'web') {
-    if (window.confirm(`${title}\n\n${message}`)) {
-      onConfirm();
-    }
-  } else {
-    Alert.alert(title, message, [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Confirmar', onPress: onConfirm },
-    ]);
-  }
-}
+import ActionReasonModal from './ActionReasonModal';
 
 export default function MentorCard({
   mentor,
@@ -29,6 +17,10 @@ export default function MentorCard({
   onReject,
 }) {
   const [expanded, setExpanded] = useState(mentor.isExpandedDefault ?? false);
+  const [modalConfig, setModalConfig] = useState({
+    visible: false,
+    type: null, // 'APPROVE' | 'REJECT'
+  });
 
   const handleOpenLink = async () => {
     if (!mentor.link) return;
@@ -46,85 +38,120 @@ export default function MentorCard({
     }
   };
 
-  const confirmApprove = () => {
-    confirmAction(
-      'Aprovar Mentor',
-      `Deseja aprovar o cadastro de ${mentor.name}?`,
-      onApprove
-    );
-  };
+  const handleConfirmModal = (reason) => {
+    const actionType = modalConfig.type;
+    setModalConfig({ visible: false, type: null });
 
-  const confirmReject = () => {
-    confirmAction(
-      'Reprovar Mentor',
-      `Deseja reprovar o cadastro de ${mentor.name}?`,
-      onReject
-    );
+    if (actionType === 'APPROVE') {
+      onApprove(reason);
+    } else if (actionType === 'REJECT') {
+      onReject(reason);
+    }
   };
 
   const isPending = !mentor.status || mentor.status === 'PENDENTE';
+  const isRejected = mentor.status === 'REPROVADO';
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      onPress={() => setExpanded(!expanded)}
-      style={[
-        styles.card,
-        { backgroundColor: theme.cardBackground },
-        expanded ? { borderColor: theme.cardBorder } : { borderColor: 'transparent' },
-      ]}
-    >
-      <View style={styles.cardHeader}>
-        <View style={[styles.avatar, { backgroundColor: theme.avatarBg }]}>
-          <Text style={[styles.avatarText, { color: '#B388FF' }]}>{mentor.initials}</Text>
+    <>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => setExpanded(!expanded)}
+        style={[
+          styles.card,
+          { backgroundColor: theme.cardBackground },
+          expanded ? { borderColor: theme.cardBorder } : { borderColor: 'transparent' },
+        ]}
+      >
+        <View style={styles.cardHeader}>
+          <View style={[styles.avatar, { backgroundColor: theme.avatarBg }]}>
+            <Text style={[styles.avatarText, { color: '#B388FF' }]}>{mentor.initials}</Text>
+          </View>
+          <View style={styles.cardHeaderInfo}>
+            <Text style={[styles.mentorName, { color: theme.textMain }]}>{mentor.name}</Text>
+            <Text style={[styles.mentorRole, { color: theme.textSub }]}>{mentor.role}</Text>
+          </View>
+          <Text style={{ color: theme.textSub, fontSize: 16 }}>
+            {expanded ? '︿' : '﹀'}
+          </Text>
         </View>
-        <View style={styles.cardHeaderInfo}>
-          <Text style={[styles.mentorName, { color: theme.textMain }]}>{mentor.name}</Text>
-          <Text style={[styles.mentorRole, { color: theme.textSub }]}>{mentor.role}</Text>
-        </View>
-        <Text style={{ color: theme.textSub, fontSize: 16 }}>
-          {expanded ? '︿' : '﹀'}
-        </Text>
-      </View>
 
-      {expanded && mentor.bio ? (
-        <View style={styles.expandedContent}>
-          <Text style={[styles.sectionTitle, { color: '#B388FF' }]}>MINIBIO</Text>
-          <Text style={[styles.bioText, { color: theme.textMain }]}>{mentor.bio}</Text>
+        {expanded && (
+          <View style={styles.expandedContent}>
+            {mentor.bio ? (
+              <>
+                <Text style={[styles.sectionTitle, { color: '#B388FF' }]}>MINIBIO</Text>
+                <Text style={[styles.bioText, { color: theme.textMain }]}>{mentor.bio}</Text>
+              </>
+            ) : null}
 
-          {mentor.tags?.length > 0 && (
-            <View style={styles.tagsContainer}>
-              {mentor.tags.map((tag) => (
-                <View key={tag} style={[styles.tag, { backgroundColor: theme.tagBg }]}>
-                  <Text style={[styles.tagText, { color: theme.tagText }]}>{tag}</Text>
-                </View>
-              ))}
-            </View>
-          )}
+            {mentor.tags?.length > 0 && (
+              <View style={styles.tagsContainer}>
+                {mentor.tags.map((tag) => (
+                  <View key={tag} style={[styles.tag, { backgroundColor: theme.tagBg }]}>
+                    <Text style={[styles.tagText, { color: theme.tagText }]}>{tag}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
 
-          {mentor.link ? (
-            <TouchableOpacity style={styles.linkContainer} onPress={handleOpenLink}>
-              <Text style={styles.linkIcon}>📅</Text>
-              <Text style={[styles.linkText, { color: '#B388FF' }]}>{mentor.link}</Text>
-            </TouchableOpacity>
-          ) : null}
-
-          {isPending && (
-            <View style={styles.actionsContainer}>
-              <TouchableOpacity style={styles.btnReprovar} onPress={confirmReject}>
-                <Text style={styles.txtReprovar}>Reprovar</Text>
+            {mentor.link ? (
+              <TouchableOpacity style={styles.linkContainer} onPress={handleOpenLink}>
+                <Text style={styles.linkIcon}>📅</Text>
+                <Text style={[styles.linkText, { color: '#B388FF' }]}>{mentor.link}</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.btnAprovar, { backgroundColor: theme.primary }]}
-                onPress={confirmApprove}
-              >
-                <Text style={styles.txtAprovar}>Aprovar</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      ) : null}
-    </TouchableOpacity>
+            ) : null}
+
+            {isRejected && mentor.rejectionReason ? (
+              <View style={styles.rejectionBox}>
+                <Text style={styles.rejectionTitle}>MOTIVO DA RECUSA</Text>
+                <Text style={[styles.rejectionText, { color: theme.textMain }]}>
+                  {mentor.rejectionReason}
+                </Text>
+              </View>
+            ) : null}
+
+            {isPending && (
+              <View style={styles.actionsContainer}>
+                <TouchableOpacity
+                  style={styles.btnReprovar}
+                  onPress={() => setModalConfig({ visible: true, type: 'REJECT' })}
+                >
+                  <Text style={styles.txtReprovar}>Reprovar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.btnAprovar, { backgroundColor: theme.primary }]}
+                  onPress={() => setModalConfig({ visible: true, type: 'APPROVE' })}
+                >
+                  <Text style={styles.txtAprovar}>Aprovar</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        )}
+      </TouchableOpacity>
+
+      <ActionReasonModal
+        visible={modalConfig.visible}
+        title={modalConfig.type === 'APPROVE' ? 'Aprovar Mentor' : 'Reprovar Mentor'}
+        message={
+          modalConfig.type === 'APPROVE'
+            ? `Deseja aprovar o cadastro de ${mentor.name}?`
+            : `Informe o motivo da recusa do cadastro de ${mentor.name}:`
+        }
+        confirmLabel={modalConfig.type === 'APPROVE' ? 'Aprovar' : 'Reprovar'}
+        confirmColor={modalConfig.type === 'APPROVE' ? theme.primary : '#E57373'}
+        requireReason={modalConfig.type === 'REJECT'}
+        placeholder={
+          modalConfig.type === 'APPROVE'
+            ? 'Ex: Perfil validado com sucesso (opcional)...'
+            : 'Ex: Faltam informações na minibio ou link inválido...'
+        }
+        theme={theme}
+        onCancel={() => setModalConfig({ visible: false, type: null })}
+        onConfirm={handleConfirmModal}
+      />
+    </>
   );
 }
 
@@ -212,6 +239,24 @@ const styles = StyleSheet.create({
   linkText: {
     fontSize: 14,
     fontWeight: '500',
+  },
+  rejectionBox: {
+    backgroundColor: 'rgba(229, 115, 115, 0.1)',
+    borderLeftWidth: 3,
+    borderLeftColor: '#E57373',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  rejectionTitle: {
+    color: '#E57373',
+    fontSize: 11,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  rejectionText: {
+    fontSize: 13,
+    lineHeight: 18,
   },
   actionsContainer: {
     flexDirection: 'row',
