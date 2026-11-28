@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import  { useMemo, useState } from 'react';
 import {
   SectionList,
   Text,
@@ -13,8 +13,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { THEMES } from '../constants/colors';
 import { groupByDay } from '../utils/dateHelpers';
-import { MOCK_NOTIFICATIONS } from '../mock/notificationsData';
-import { NotificationItem } from '../components/NotificationItem.jsx';
+import { MOCK_NOTIFICATIONS } from '../../mocks/notificationsData';
+import { NotificationItem } from '../../components/NotificationItem.jsx';
 
 export function NotificationsScreen({
   forcedScheme,
