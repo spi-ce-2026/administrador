@@ -5,18 +5,31 @@ import { rotuloData, rotuloTipo } from '../../utils/vouchers';
 
 export const fonteCodigo = Platform.select({ ios: 'Menlo', default: 'monospace' });
 
+// Badge "Restrito": no modo escuro usa tons claros para destacar sobre o fundo roxo escuro.
+const RESTRITO_CLARO = { fundo: '#FFF1D6', texto: '#7A4B00' };
+const RESTRITO_ESCURO = { fundo: '#FFE2A8', texto: '#3D2600' };
+
+function coresRestrito(tema) {
+  if (tema.modoEscuro) return RESTRITO_ESCURO;
+  return {
+    fundo: tema.restritoFundo ?? RESTRITO_CLARO.fundo,
+    texto: tema.restritoTexto ?? RESTRITO_CLARO.texto,
+  };
+}
+
 export function BadgeTipo({ voucher }) {
   const tema = useTheme();
   const restrito = voucher.type === 'restricted';
+  const coresR = coresRestrito(tema);
 
   return (
     <View
       style={[
         styles.badge,
-        { backgroundColor: restrito ? tema.restritoFundo : tema.iconeFundo },
+        { backgroundColor: restrito ? coresR.fundo : tema.iconeFundo },
       ]}
     >
-      <Text style={[styles.badgeTexto, { color: restrito ? tema.restritoTexto : tema.icone }]}>
+      <Text style={[styles.badgeTexto, { color: restrito ? coresR.texto : tema.icone }]}>
         {rotuloTipo(voucher)}
       </Text>
     </View>

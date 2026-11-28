@@ -59,6 +59,40 @@ export function lerData(texto) {
   return valida ? `${ano}-${mes}-${dia}` : null;
 }
 
+// Valida a validade digitada (dd/mm/aaaa) para a geração de vouchers.
+// Retorna { iso } quando válida (formato aaaa-mm-dd) ou { erro } com a mensagem para o usuário.
+// Regras: obrigatória, formato completo, mês 01–12, dia existente naquele mês/ano e
+// não pode ser anterior a hoje (hoje ainda é aceito).
+export function validarValidade(texto, hoje = new Date()) {
+  const valor = (texto ?? '').trim();
+  if (!valor) return { erro: 'Informe a data de validade.' };
+
+  const partes = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(valor);
+  if (!partes) return { erro: 'Use o formato dd/mm/aaaa.' };
+
+  const dia = Number(partes[1]);
+  const mes = Number(partes[2]);
+  const ano = Number(partes[3]);
+
+  if (mes < 1 || mes > 12) return { erro: 'Mês inválido. Use um valor de 01 a 12.' };
+
+  // Último dia do mês (considera ano bissexto). setFullYear evita o ajuste de anos 0–99.
+  const referencia = new Date(2000, 0, 1);
+  referencia.setFullYear(ano, mes, 0);
+  const ultimoDia = referencia.getDate();
+  if (dia < 1 || dia > ultimoDia) {
+    return { erro: `Dia inválido. Esse mês tem ${ultimoDia} dias.` };
+  }
+
+  const iso = `${partes[3]}-${partes[2]}-${partes[1]}`;
+  const hojeIso = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(
+    hoje.getDate()
+  ).padStart(2, '0')}`;
+  if (iso < hojeIso) return { erro: 'A data de validade não pode estar no passado.' };
+
+  return { iso };
+}
+
 export function dataCurta(iso) {
   if (!iso) return '';
   const [, mes, dia] = iso.split('-');
